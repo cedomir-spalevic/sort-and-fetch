@@ -102,7 +102,7 @@ class Records {
              * If Result is < 0, left will go before right
              * If Result is > 0, right will go before left
              * 
-             * Sort By Gender (females before males), then by last name ascending
+             * Sort By Gender (females before males), then by last name ascending (A - Z)
              */
 
              // values to be used for comparison
@@ -128,6 +128,9 @@ class Records {
         this.viewAllRecords();
     }
 
+    /**
+     * Sort Records by Birth Date Ascending
+     */
     sortRecordsByBirthDate() {
         this.records = this.records.sort( (left, right) => {
             /**
@@ -176,6 +179,32 @@ class Records {
             // sort birth date by ascending, so which ever is smaller will go first
             if(leftValue < rightValue) return -1;
             else if(leftValue > rightValue) return 1;
+            else return 0;
+        });
+        this.viewAllRecords();
+    }
+
+    /**
+     * Sort Records by Last Name Descending
+     */
+    sortRecordsByLastName() {
+        this.records = this.records.sort( (left, right) => {
+            /**
+             * Sort Compare Function
+             * If Result is < 0, left will go before right
+             * If Result is > 0, right will go before left
+             * 
+             * Sort By Last Name Descending (Z - A)
+             */
+
+            // values to be used for comparison
+            var leftValue = left.lastName;
+            var rightValue = right.lastName;
+            
+            // we want to sort in descending order, so if the value is less than the other
+            // then we want the greater one to come first
+            if(leftValue < rightValue) return 1;
+            else if(leftValue > rightValue) return -1;
             else return 0;
         });
         this.viewAllRecords();

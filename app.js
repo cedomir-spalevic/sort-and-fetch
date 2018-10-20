@@ -38,7 +38,7 @@ function displayInstructions() {
                 displayInstructions();
                 break;
             case "E":
-                records.sortRecordsByName();
+                records.sortRecordsByLastName();
                 displayInstructions();
                 break;
             case "F":
