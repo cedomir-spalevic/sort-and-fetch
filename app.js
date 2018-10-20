@@ -52,22 +52,24 @@ function displayInstructions() {
  * Accept a file path, parse the file, and add the records
  */
 function addMoreRecords() {
-    
     console.log("Please enter the path to the file containing the records you would like to add:");
 
     stdin.once('data', function(path) {
-        //add records
+        path = path.trim().replace(/\r?\n|\r/g, '');
+        try {
+            records.parseFile(path);
+        } catch(error) {
+            console.log(error);
+        }
+        displayInstructions();
     });
-
-    displayInstructions();
 }
 
 /**
  * View All Records
  */
 function viewAllRecords() {
-
-    //display all records
+    records.viewAllRecords();
 
     displayInstructions();
 }
