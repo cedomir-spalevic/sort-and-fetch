@@ -47,6 +47,7 @@ function displayInstructions() {
                 break;
             default:
                 console.log("Invalid input. Please try again.");
+                displayInstructions();
                 break;
         };
     });
