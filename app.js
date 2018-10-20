@@ -26,16 +26,20 @@ function displayInstructions() {
                 addMoreRecords();
                 break;
             case "B":
-                viewAllRecords();
+                records.viewAllRecords();
+                displayInstructions();
                 break;
             case "C":
-                getRecordsByGender();
+                records.sortRecordsByGender();
+                displayInstructions();
                 break;
             case "D":
-                getRecordsByBirthDate();
+                records.sortRecordsByBirthDate();
+                displayInstructions();
                 break;
             case "E":
-                getRecordsByName();
+                records.sortRecordsByName();
+                displayInstructions();
                 break;
             case "F":
                 console.log("Goodbye!");
@@ -63,33 +67,6 @@ function addMoreRecords() {
         }
         displayInstructions();
     });
-}
-
-/**
- * View All Records
- */
-function viewAllRecords() {
-    records.viewAllRecords();
-
-    displayInstructions();
-}
-
-function getRecordsByGender() {
-    //display records sorted by gender
-
-    displayInstructions();
-}
-
-function getRecordsByBirthDate() {
-    //display records by birth date
-
-    displayInstructions();
-}
-
-function getRecordsByName() {
-    //display records by name
-
-    displayInstructions();
 }
 
 displayInstructions();

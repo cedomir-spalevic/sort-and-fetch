@@ -63,13 +63,16 @@ class Records {
 
             // create record and add to array
             var obj = {
-                "lastName": record[0],
-                "firstName": record[1],
-                "gender": record[2],
-                'color': record[3],
-                'dateOfBirth': record[4],
+                "lastName": record[0].trimStart().trim(),
+                "firstName": record[1].trimStart().trim(),
+                "gender": record[2].trimStart().trim(),
+                'color': record[3].trimStart().trim(),
+                'dateOfBirth': record[4].trimStart().trim(),
             };
             this.records.push(obj);
+
+            // sort the records
+
         });
     }
 
@@ -87,6 +90,51 @@ class Records {
                 Date Of Birth: ${record.dateOfBirth}\n
             `);
         });
+    }
+
+    /**
+     * Sort Records By Gender (female before male) then Last Name Ascending
+     */
+    sortRecordsByGender() {
+        this.records = this.records.sort( (left, right) => {
+            /**
+             * Sort Compare Function
+             * If Result is < 0, left will go before right
+             * If Result is > 0, right will go before left
+             * 
+             * Sort By Gender (females before males), then by last name ascending
+             * 
+             * Ascending - A to Z
+             * ASCII Value:
+             * A = 65
+             * Z = 90
+             */
+
+             var leftValue;
+             var rightValue;
+            
+            // if records have the same gender - then we compare the last names
+            if(left.gender === right.gender) {
+                // get the ASCII value of the first character in the last name
+                // and convert to uppercase so we make sure we are comparing the correct values
+                leftValue = left.lastName[0].toUpperCase().charCodeAt();
+                rightValue = right.lastName[0].toUpperCase().charCodeAt();
+            }
+            // if records gender are not the same
+            else {
+                // get the ASCII value of the first character in the gender
+                // and convert to uppercase so we make sure we are comparing the correct values
+                leftValue = left.gender[0].toUpperCase().charCodeAt();
+                rightValue = right.gender[0].toUpperCase().charCodeAt();
+            }
+
+            // F comes before M (which is ascending order), so we can use the same comparison for both
+            // last names and gender
+            if(leftValue < rightValue) return -1;
+            else if(leftValue > rightValue) return 1;
+            else return 0;
+        });
+        this.viewAllRecords();
     }
 
 }
