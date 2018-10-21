@@ -1,3 +1,4 @@
+var Record = require('./records.js');
 
 class Console {
 
@@ -11,15 +12,13 @@ class Console {
      * Display Main Instructions
      */
     displayInstructions() {
-        console.log(`
-            What would you like to do?
-            A) Add more records
-            B) View all records
-            C) Get records sorted by gender
-            D) Get records sorted by birth date
-            E) Get records sorted by name
-            F) Exit
-        `);
+        console.log("What would you like to do?\n"+
+                    "A) Add more records\n"+
+                    "B) View all records\n"+
+                    "C) Get records sorted by gender\n"+
+                    "D) Get records sorted by birth date\n"+
+                    "E) Get records sorted by name\n"+
+                    "F) Exit\n");
 
         this.stdin.once('data', (input) => { 
             switch(input.trim()) {
@@ -27,19 +26,22 @@ class Console {
                     this.addMoreRecords();
                     break;
                 case "B":
-                    this.records.viewAllRecords();
+                    Record.displayRecords(this.records.records);
                     this.displayInstructions();
                     break;
                 case "C":
                     this.records.sortRecordsByGender();
+                    Record.displayRecords(this.records.sortedRecordsdByGender);
                     this.displayInstructions();
                     break;
                 case "D":
                     this.records.sortRecordsByBirthDate();
+                    Record.displayRecords(this.records.sortedRecordsByBirthDate);
                     this.displayInstructions();
                     break;
                 case "E":
                     this.records.sortRecordsByLastName();
+                    Record.displayRecords(this.records.sortedRecordsByLastName);
                     this.displayInstructions();
                     break;
                 case "F":
@@ -64,6 +66,7 @@ class Console {
             path = path.trim().replace(/\r?\n|\r/g, '');
             try {
                 this.records.parseFile(path);
+                console.log("Records added successfully!\n");
             } catch(error) {
                 console.log(error);
             }

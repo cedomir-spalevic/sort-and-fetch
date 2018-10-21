@@ -7,9 +7,12 @@ class Records {
 
     constructor() {
         this.records = [];
-        this.sortedByGender = [];
-        this.sortedByBirthDate = [];
-        this.sortedByName = [];
+        this.sortedRecordsdByGender = [];
+        this.sortedRecordsByBirthDate = [];
+        this.sortedRecordsByLastName = [];
+        this.genderRecordsNeedsUpdate = false;
+        this.birthDateRecordsNeedsUpdate = false;
+        this.lastNameRecordsNeedsUpdate = false;
     }
 
     /**
@@ -18,18 +21,18 @@ class Records {
      * @param {*} path 
      */
     parseFile(path) {
-        var fileContent;
+        var content;
 
         // attempt to read the file
         try {
-            fileContent = fs.readFileSync(path, 'utf8');
+            content = fs.readFileSync(path, 'utf8');
         }
         catch(err) {
             throw "Incorrect file path. Please make sure you are entering the correct path.\n";
         }
 
         // if file is real, attempt to add the records within the file
-        this.addRecords(fileContent);
+        this.addRecords(content);
     }
 
     /**
@@ -49,7 +52,7 @@ class Records {
                 if(line.split(',').length !== 1) delim = ',';
                 else if(line.split('|').length !== 1) delim = '|';
                 else if(line.split(' ').length !== 1) delim = ' ';
-                else console.log("Incorrect file format.");
+                else throw "Incorrect file format.";
             }
 
             // get the record
@@ -57,8 +60,8 @@ class Records {
             
             // make sure record is in the correct format
             if(record.length !== 5) {
-                throw `Incorrect record format. Please make sure your record are in the format of:
-                        LastName <delim> FirstName <delim> Gender <delim> Color <delim> DateOfBirth (M/D/YYYY)\n`;
+                throw "Incorrect record format. Please make sure your record are in the format of:\n"+
+                        "LastName <delim> FirstName <delim> Gender <delim> Color <delim> DateOfBirth (M/D/YYYY)\n";
             }
 
             // create record and add to array
@@ -71,24 +74,10 @@ class Records {
             };
             this.records.push(obj);
 
-            // sort the records
-
-        });
-    }
-
-    /**
-     * Display all records
-     */
-    viewAllRecords() {
-        console.log(`Total Records Found: ${this.records.length}:\n`);
-        this.records.forEach( (record) => {
-            console.log(`
-                Last Name: ${record.lastName},
-                First Name: ${record.firstName},
-                Gender: ${record.gender},
-                Favorite Color: ${record.color},
-                Date Of Birth: ${record.dateOfBirth}\n
-            `);
+            // records need update
+            this.genderRecordsNeedsUpdate = true;
+            this.birthDateRecordsNeedsUpdate = true;
+            this.lastNameRecordsNeedsUpdate = true;
         });
     }
 
@@ -96,7 +85,8 @@ class Records {
      * Sort Records By Gender (female before male) then Last Name Ascending
      */
     sortRecordsByGender() {
-        this.records = this.records.sort( (left, right) => {
+        if(!this.genderRecordsNeedsUpdate) return;
+        this.sortedRecordsdByGender = this.records.sort( (left, right) => {
             /**
              * Sort Compare Function
              * If Result is < 0, left will go before right
@@ -125,14 +115,14 @@ class Records {
             else if(leftValue > rightValue) return 1;
             else return 0;
         });
-        this.viewAllRecords();
     }
 
     /**
      * Sort Records by Birth Date Ascending
      */
     sortRecordsByBirthDate() {
-        this.records = this.records.sort( (left, right) => {
+        if(!this.birthDateRecordsNeedsUpdate) return;
+        this.sortedRecordsByBirthDate = this.records.sort( (left, right) => {
             /**
              * Sort Compare Function
              * If Result is < 0, left will go before right
@@ -181,14 +171,14 @@ class Records {
             else if(leftValue > rightValue) return 1;
             else return 0;
         });
-        this.viewAllRecords();
     }
 
     /**
      * Sort Records by Last Name Descending
      */
     sortRecordsByLastName() {
-        this.records = this.records.sort( (left, right) => {
+        if(!this.lastNameRecordsNeedsUpdate) return;
+        this.sortedRecordsByLastName = this.records.sort( (left, right) => {
             /**
              * Sort Compare Function
              * If Result is < 0, left will go before right
@@ -207,9 +197,25 @@ class Records {
             else if(leftValue > rightValue) return -1;
             else return 0;
         });
-        this.viewAllRecords();
     }
 
+    /**
+     * Display Records
+     * 
+     * @param {*} records 
+     */
+    static displayRecords(records) {
+        console.log(`Total Records Found: ${records.length}:\n`);
+        records.forEach( (record) => {
+            console.log(`
+                Last Name: ${record.lastName},
+                First Name: ${record.firstName},
+                Gender: ${record.gender},
+                Favorite Color: ${record.color},
+                Date Of Birth: ${record.dateOfBirth}\n
+            `);
+        });
+    }
 }
 
 module.exports = Records;
