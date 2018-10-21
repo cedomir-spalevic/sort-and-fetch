@@ -30,18 +30,15 @@ class Console {
                     this.displayInstructions();
                     break;
                 case "C":
-                    this.records.sortRecordsByGender();
-                    Record.displayRecords(this.records.sortedRecordsdByGender);
+                    Record.displayRecords(this.records.getRecordsSortedByGender());
                     this.displayInstructions();
                     break;
                 case "D":
-                    this.records.sortRecordsByBirthDate();
-                    Record.displayRecords(this.records.sortedRecordsByBirthDate);
+                    Record.displayRecords(this.records.getRecordsSortedByBirthDate());
                     this.displayInstructions();
                     break;
                 case "E":
-                    this.records.sortRecordsByLastName();
-                    Record.displayRecords(this.records.sortedRecordsByLastName);
+                    Record.displayRecords(this.records.getRecordsSortedByLastName());
                     this.displayInstructions();
                     break;
                 case "F":
@@ -64,13 +61,23 @@ class Console {
 
         this.stdin.once('data', (path) => {
             path = path.trim().replace(/\r?\n|\r/g, '');
-            try {
-                this.records.parseFile(path);
-                console.log("Records added successfully!\n");
-            } catch(error) {
+
+            // first check if the file exists
+            this.records.fileExists(path).then( () => {
+
+                // attempt to parse the file and add the records
+                this.records.parseFile(path).then( (response) => {
+                    console.log(response);
+                    this.displayInstructions();
+                }).catch( error => {
+                    console.log(error);
+                    this.displayInstructions();
+                })
+
+            }).catch( error => {
                 console.log(error);
-            }
-            this.displayInstructions();
+                this.displayInstructions();
+            });
         });
     }
 }

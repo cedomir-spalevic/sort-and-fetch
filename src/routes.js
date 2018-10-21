@@ -25,16 +25,16 @@ module.exports = function(app, port, records) {
 
     // returns all records in json format, sorted by gender
     app.get('/records/gender', (request, response) => {
-        response.send(records.sortedRecordsByGender);
+        response.send(records.getRecordsSortedByGender());
     });
     
     // returns all records in json format, sorted by birth date
     app.get('/records/birthdate', (request, response) => {
-        response.send(records.sortedRecordsByBirthDate);
+        response.send(records.getRecordsSortedByBirthDate());
     });
     
     // returns all records in json format, sorted by last name
     app.get('/records/name', (request, response) => {
-        response.send(records.sortedRecordsByLastName);
+        response.send(records.getRecordsSortedByLastName());
     });
 }

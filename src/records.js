@@ -8,12 +8,37 @@ class Records {
 
     constructor() {
         this.records = [];
-        this.sortedRecordsdByGender = [];
-        this.sortedRecordsByBirthDate = [];
-        this.sortedRecordsByLastName = [];
+        this.recordsSortedByGender = [];
+        this.recordsSortedByByBirthDate = [];
+        this.recordsSortedByLastName = [];
         this.genderRecordsNeedsUpdate = false;
         this.birthDateRecordsNeedsUpdate = false;
         this.lastNameRecordsNeedsUpdate = false;
+    }
+
+    /**
+     * Checks if a file exists and is readable
+     * 
+     * @param {*} path 
+     */
+    fileExists(path) {
+        // promise to check if the file exists and is readable
+        return new Promise( (resolve, reject) => {
+            fs.access(path, fs.constants.F_OK | fs.constants.R_OK, (error) => {
+                if(error) {
+                    var message;
+                    if(error.code === 'ENOENT') {
+                        message = `${path} does not exist. Please make sure you entering the correct file path.\n`;
+                    }
+                    else {
+                        message = `${path} is not readable. Pleaes check the file permissions.\n`;
+                    }
+                    reject(message);
+                } else {
+                    resolve();
+                }
+            });
+        });
     }
 
     /**
@@ -22,84 +47,38 @@ class Records {
      * @param {*} path 
      */
     parseFile(path) {
+        // promise to add the records
+        return new Promise( (resolve, reject) => {
+            // we know that every file wil be stored in the same format
+            // so we must determine the delimiter
+            var delim = '';
 
-        // promise to check if the file exists and is readable
-        var fileCorrect = new Promise( (resolve, reject) => {
-            fs.access(path, fs.constants.F_OK | fs.constants.R_OK, (error) => {
-                if(error) {
-                    var message;
-                    if(error.code === 'ENOENT') {
-                        message = `${path} does not exist. Please make sure you entering the correct file path.`;
-                    }
-                    else {
-                        message = `${path} is not readable. Pleaes check the file permissions.`;
-                    }
-                    reject(message);
-                } else {
-                    resolve();
+            // read file line by line
+            readLine.createInterface({
+                input: fs.createReadStream(path),
+                crlfDelay: Infinity
+            }).on('line', (line) => {
+                // if delimiter is unknown, find it
+                if(delim === '') {
+                    if(line.split(',').length !== 1) delim = ',';
+                    else if(line.split('|').length !== 1) delim = '|';
+                    else if(line.split('').length !== 1) delim = ' ';
+                    else reject("Incorrect file format.\n");
                 }
+
+                // try to add the record
+                var recordAdded = this.addRecord(line, delim);
+                if(recordAdded !== "1") reject(recordAdded);
+
+            }).on('close', () => {
+                // records needs updating
+                this.genderRecordsNeedsUpdate = true;
+                this.birthDateRecordsNeedsUpdate = true;
+                this.lastNameRecordsNeedsUpdate = true;
+
+                resolve("Records added successfully!\n");
             });
-        });
-
-        fileCorrect.then( () => {
-            //do the parsing stuff
-        }).catch( function(error) {
-            setTimeout(function() {
-                throw error;
-            });
-        });
-
-        // check if the file exists
-        /*fs.access(path, fs.constants.F_OK, (error) => {
-            if(error) {
-                throw `${path} does not exist. Please make sure you entering the correct file path.`;
-                return;
-            }
-        }).then( () => {
-            console.log("here");
-            // check if the file is readable
-            fs.access(path, fs.constants.R_OK, (error) => {
-                if(error) {
-                    throw `${path} is not readable. Pleaes check the file permissions.`;
-                    return;
-                }
-            });
-        });*/
-
-        // check if the file is readable
-        /*fs.access(path, fs.constants.R_OK, (error) => {
-            if(error) {
-                throw `${path} is not readable. Pleaes check the file permissions.`;
-                return;
-            }
-        }); */
-
-        
-        // we know that every file will be stored in the same format
-        // so we must determine the delimiter
-        var delim = '';
-
-        // read file line by line
-        /*readLine.createInterface({
-            input: fs.createReadStream(path),
-            crlfDelay: Infinity
-        }).on('line', (line) => {
-            // if delimiter is unknown, find it
-            if(delim === '') {
-                if(line.split(',').length !== 1) delim = ',';
-                else if(line.split('|').length !== 1) delim = '|';
-                else if(line.split(' ').length !== 1) delim = ' ';
-                else throw "Incorrect file format.";
-            }
-
-            // add the record
-            this.addRecord(line, delim);
-        }); */
-
-        // records needs updating
-        this.genderRecordsNeedsUpdate = true;
-        this.birthDateRecordsNeedsUpdate = true;
-        this.lastNameRecordsNeedsUpdate = true;
+        })
     }
 
     /**
@@ -130,26 +109,27 @@ class Records {
             
         // make sure record is in the correct format
         if(record.length !== 5) {
-            throw "Incorrect record format. Please make sure your record are in the format of:\n"+
+            return "Incorrect record format. Please make sure your record are in the format of:\n"+
                     "LastName <delim> FirstName <delim> Gender <delim> Color <delim> DateOfBirth (M/D/YYYY)\n";
         }
 
         // create record and add to array
         var obj = {
-            "lastName": record[0].trimStart().trim(),
-            "firstName": record[1].trimStart().trim(),
-            "gender": record[2].trimStart().trim(),
-            'color': record[3].trimStart().trim(),
-            'dateOfBirth': record[4].trimStart().trim(),
+            "lastName": record[0].trimLeft().trim(),
+            "firstName": record[1].trimLeft().trim(),
+            "gender": record[2].trimLeft().trim(),
+            'color': record[3].trimLeft().trim(),
+            'dateOfBirth': record[4].trimLeft().trim(),
         };
         this.records.push(obj);
+        return "1";
     }
 
     /**
      * Sort Records By Gender (female before male) then Last Name Ascending
      */
-    sortRecordsByGender() {
-        if(!this.genderRecordsNeedsUpdate) return;
+    getRecordsSortedByGender() {
+        if(!this.genderRecordsNeedsUpdate) return this.recordsSortedByGender;
         this.sortedRecordsdByGender = this.records.sort( (left, right) => {
             /**
              * Sort Compare Function
@@ -180,13 +160,14 @@ class Records {
             else return 0;
         });
         this.genderRecordsNeedsUpdate = false;
+        return this.recordsSortedByGender;
     }
 
     /**
      * Sort Records by Birth Date Ascending
      */
-    sortRecordsByBirthDate() {
-        if(!this.birthDateRecordsNeedsUpdate) return;
+    getRecordsSortedByBirthDate() {
+        if(!this.birthDateRecordsNeedsUpdate) return this.recordsSortedByByBirthDate;
         this.sortedRecordsByBirthDate = this.records.sort( (left, right) => {
             /**
              * Sort Compare Function
@@ -237,13 +218,14 @@ class Records {
             else return 0;
         });
         this.birthDateRecordsNeedsUpdate = false;
+        return this.recordsSortedByByBirthDate;
     }
 
     /**
      * Sort Records by Last Name Descending
      */
-    sortRecordsByLastName() {
-        if(!this.lastNameRecordsNeedsUpdate) return;
+    getRecordsSortedByLastName() {
+        if(!this.lastNameRecordsNeedsUpdate) return this.recordsSortedByLastName;
         this.sortedRecordsByLastName = this.records.sort( (left, right) => {
             /**
              * Sort Compare Function
@@ -264,6 +246,7 @@ class Records {
             else return 0;
         });
         this.lastNameRecordsNeedsUpdate = false;
+        return this.recordsSortedByLastName;
     }
 
     /**
