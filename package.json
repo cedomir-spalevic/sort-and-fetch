@@ -1,0 +1,22 @@
+{
+  "name": "sort-and-fetch",
+  "version": "1.0.0",
+  "description": "RESTful Sort and Fetch Records",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cedomir-spalevic/sort-and-fetch.git"
+  },
+  "author": "Cedomir Spalevic",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cedomir-spalevic/sort-and-fetch/issues"
+  },
+  "homepage": "https://github.com/cedomir-spalevic/sort-and-fetch#readme",
+  "dependencies": {
+    "express": "^4.16.4"
+  }
+}
