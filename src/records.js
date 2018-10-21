@@ -87,14 +87,47 @@ class Records {
      * @param {*} json 
      */
     parseJSON(json) {
-        var content;
+        return new Promise( (resolve, reject) => {
+            var content;
+            try {
+                content = JSON.parse(json);
+            }
+            catch(error) {
+                reject("Unable to parse JSON.");
+            }
 
-        try {
-            content = JSON.parse(content);
-        }
-        catch(error) {
-            console.log(error.message);
-        }
+            // we know that every file wil be stored in the same format
+            // so we must determine the delimiter
+            var delim = '';
+
+            // if not JSON array, create a single array
+            if(!Array.isArray(content)) {
+                var temp = content;
+                content = [];
+                content.push(temp);
+            }
+
+            content.forEach( record => {
+                // if delimiter is unknown, find it
+                if(delim === '') {
+                    if(record.split(',').length !== 1) delim = ',';
+                    else if(record.split('|').length !== 1) delim = '|';
+                    else if(record.split('').length !== 1) delim = ' ';
+                    else reject("Incorrect file format.\n");
+                }
+
+                // try to add the record
+                var recordAdded = this.addRecord(record, delim);
+                if(recordAdded !== "1") reject(recordAdded);
+            });
+
+            // records needs updating
+            this.genderRecordsNeedsUpdate = true;
+            this.birthDateRecordsNeedsUpdate = true;
+            this.lastNameRecordsNeedsUpdate = true;
+
+            resolve("Success!\n");
+        });
     }
 
     /**
@@ -130,7 +163,7 @@ class Records {
      */
     getRecordsSortedByGender() {
         if(!this.genderRecordsNeedsUpdate) return this.recordsSortedByGender;
-        this.sortedRecordsdByGender = this.records.sort( (left, right) => {
+        this.recordsSortedByGender = this.records.sort( (left, right) => {
             /**
              * Sort Compare Function
              * If Result is < 0, left will go before right
@@ -168,7 +201,7 @@ class Records {
      */
     getRecordsSortedByBirthDate() {
         if(!this.birthDateRecordsNeedsUpdate) return this.recordsSortedByByBirthDate;
-        this.sortedRecordsByBirthDate = this.records.sort( (left, right) => {
+        this.recordsSortedByByBirthDate = this.records.sort( (left, right) => {
             /**
              * Sort Compare Function
              * If Result is < 0, left will go before right
@@ -226,7 +259,7 @@ class Records {
      */
     getRecordsSortedByLastName() {
         if(!this.lastNameRecordsNeedsUpdate) return this.recordsSortedByLastName;
-        this.sortedRecordsByLastName = this.records.sort( (left, right) => {
+        this.recordsSortedByLastName = this.records.sort( (left, right) => {
             /**
              * Sort Compare Function
              * If Result is < 0, left will go before right

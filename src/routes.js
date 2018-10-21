@@ -1,7 +1,5 @@
 module.exports = function(app, port, records) {
 
-    //app.use(express.bodyParser());
-
     // start server
     app.listen(port);
     console.log(`Sort-and-Fetch RESTful API server runing on port ${port}\n`);
@@ -13,13 +11,12 @@ module.exports = function(app, port, records) {
         request.on('data', function(chunk) {
             body += chunk;
         }).on('end', function() {
-            try {
-                records.parseJSON(body);
-                response.send('Success');
-            }
-            catch(error) {
+            // attempt to parse the JSON and add records
+            records.parseJSON(body).then( recordsResponse => {
+                response.send(recordsResponse);
+            }).catch( error => {
                 response.send(error);
-            }
+            });
         });
     });
 
