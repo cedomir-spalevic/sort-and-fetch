@@ -1,3 +1,4 @@
+var readLine = require('readline');
 var fs = require('fs');
 
 /**
@@ -16,38 +17,74 @@ class Records {
     }
 
     /**
-     * Attempts to read a file given the path
+     * Attempts to parse a file and add the records
      * 
      * @param {*} path 
      */
     parseFile(path) {
-        var content;
 
-        // attempt to read the file
-        try {
-            content = fs.readFileSync(path, 'utf8');
-        }
-        catch(err) {
-            throw "Incorrect file path. Please make sure you are entering the correct path.\n";
-        }
+        // promise to check if the file exists and is readable
+        var fileCorrect = new Promise( (resolve, reject) => {
+            fs.access(path, fs.constants.F_OK | fs.constants.R_OK, (error) => {
+                if(error) {
+                    var message;
+                    if(error.code === 'ENOENT') {
+                        message = `${path} does not exist. Please make sure you entering the correct file path.`;
+                    }
+                    else {
+                        message = `${path} is not readable. Pleaes check the file permissions.`;
+                    }
+                    reject(message);
+                } else {
+                    resolve();
+                }
+            });
+        });
 
-        // if file is real, attempt to add the records within the file
-        this.addRecords(content);
-    }
+        fileCorrect.then( () => {
+            //do the parsing stuff
+        }).catch( function(error) {
+            setTimeout(function() {
+                throw error;
+            });
+        });
 
-    /**
-     * Attempts to parse the contents of a file and add the records to the array
-     * 
-     * @param {*} content 
-     */
-    addRecords(content) {
+        // check if the file exists
+        /*fs.access(path, fs.constants.F_OK, (error) => {
+            if(error) {
+                throw `${path} does not exist. Please make sure you entering the correct file path.`;
+                return;
+            }
+        }).then( () => {
+            console.log("here");
+            // check if the file is readable
+            fs.access(path, fs.constants.R_OK, (error) => {
+                if(error) {
+                    throw `${path} is not readable. Pleaes check the file permissions.`;
+                    return;
+                }
+            });
+        });*/
+
+        // check if the file is readable
+        /*fs.access(path, fs.constants.R_OK, (error) => {
+            if(error) {
+                throw `${path} is not readable. Pleaes check the file permissions.`;
+                return;
+            }
+        }); */
+
+        
+        // we know that every file will be stored in the same format
+        // so we must determine the delimiter
         var delim = '';
 
-        // go through each line in the file
-        content.split('\n').forEach( (line) => {
-
-            // if the delimiter is not known, we need to find out which format the file is in
-            // if the file is not in the format of comma delimited, pipe delimited, or space delimited - throw an error
+        // read file line by line
+        /*readLine.createInterface({
+            input: fs.createReadStream(path),
+            crlfDelay: Infinity
+        }).on('line', (line) => {
+            // if delimiter is unknown, find it
             if(delim === '') {
                 if(line.split(',').length !== 1) delim = ',';
                 else if(line.split('|').length !== 1) delim = '|';
@@ -55,30 +92,57 @@ class Records {
                 else throw "Incorrect file format.";
             }
 
-            // get the record
-            var record = line.split(delim);
+            // add the record
+            this.addRecord(line, delim);
+        }); */
+
+        // records needs updating
+        this.genderRecordsNeedsUpdate = true;
+        this.birthDateRecordsNeedsUpdate = true;
+        this.lastNameRecordsNeedsUpdate = true;
+    }
+
+    /**
+     * Attempts to parse a JSON object (or array) coming from a POST request and the add records
+     * 
+     * @param {*} json 
+     */
+    parseJSON(json) {
+        var content;
+
+        try {
+            content = JSON.parse(content);
+        }
+        catch(error) {
+            console.log(error.message);
+        }
+    }
+
+    /**
+     * Adds a record that is in any of the accepted formats
+     * 
+     * @param {*} line 
+     * @param {*} delim 
+     */
+    addRecord(line, delim) {
+        // get the record
+        var record = line.split(delim);
             
-            // make sure record is in the correct format
-            if(record.length !== 5) {
-                throw "Incorrect record format. Please make sure your record are in the format of:\n"+
-                        "LastName <delim> FirstName <delim> Gender <delim> Color <delim> DateOfBirth (M/D/YYYY)\n";
-            }
+        // make sure record is in the correct format
+        if(record.length !== 5) {
+            throw "Incorrect record format. Please make sure your record are in the format of:\n"+
+                    "LastName <delim> FirstName <delim> Gender <delim> Color <delim> DateOfBirth (M/D/YYYY)\n";
+        }
 
-            // create record and add to array
-            var obj = {
-                "lastName": record[0].trimStart().trim(),
-                "firstName": record[1].trimStart().trim(),
-                "gender": record[2].trimStart().trim(),
-                'color': record[3].trimStart().trim(),
-                'dateOfBirth': record[4].trimStart().trim(),
-            };
-            this.records.push(obj);
-
-            // records need update
-            this.genderRecordsNeedsUpdate = true;
-            this.birthDateRecordsNeedsUpdate = true;
-            this.lastNameRecordsNeedsUpdate = true;
-        });
+        // create record and add to array
+        var obj = {
+            "lastName": record[0].trimStart().trim(),
+            "firstName": record[1].trimStart().trim(),
+            "gender": record[2].trimStart().trim(),
+            'color': record[3].trimStart().trim(),
+            'dateOfBirth': record[4].trimStart().trim(),
+        };
+        this.records.push(obj);
     }
 
     /**
@@ -115,6 +179,7 @@ class Records {
             else if(leftValue > rightValue) return 1;
             else return 0;
         });
+        this.genderRecordsNeedsUpdate = false;
     }
 
     /**
@@ -171,6 +236,7 @@ class Records {
             else if(leftValue > rightValue) return 1;
             else return 0;
         });
+        this.birthDateRecordsNeedsUpdate = false;
     }
 
     /**
@@ -197,6 +263,7 @@ class Records {
             else if(leftValue > rightValue) return -1;
             else return 0;
         });
+        this.lastNameRecordsNeedsUpdate = false;
     }
 
     /**
