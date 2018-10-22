@@ -9,7 +9,7 @@ var port = process.env.PORT || 3000;
 var records = new Records();
 
 // console object to write to console and get user input
-var commandLineApp = new Console(records);
+var commandLineApp = new Console(records, port);
 
 // define REST API urls
 routes(app, port, records);
