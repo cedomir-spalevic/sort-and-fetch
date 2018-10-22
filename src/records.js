@@ -76,10 +76,6 @@ class Records {
                 this.birthDateRecordsNeedsUpdate = true;
                 this.lastNameRecordsNeedsUpdate = true;
 
-                this.recordsSortedByGender = this.records;
-                this.recordsSortedByByBirthDate = this.records;
-                this.recordsSortedByLastName = this.records;
-
                 resolve("Records added successfully!\n");
             });
         })
@@ -129,10 +125,6 @@ class Records {
             this.genderRecordsNeedsUpdate = true;
             this.birthDateRecordsNeedsUpdate = true;
             this.lastNameRecordsNeedsUpdate = true;
-            
-            this.recordsSortedByGender = this.records;
-            this.recordsSortedByByBirthDate = this.records;
-            this.recordsSortedByLastName = this.records;
 
             resolve("Success!\n");
         });
@@ -163,6 +155,9 @@ class Records {
             'dateOfBirth': record[4].trimLeft().trim(),
         };
         this.records.push(obj);
+        this.recordsSortedByGender.push(obj);
+        this.recordsSortedByByBirthDate.push(obj);
+        this.recordsSortedByLastName.push(obj);
         return "1";
     }
 
