@@ -76,6 +76,10 @@ class Records {
                 this.birthDateRecordsNeedsUpdate = true;
                 this.lastNameRecordsNeedsUpdate = true;
 
+                this.recordsSortedByGender = this.records;
+                this.recordsSortedByByBirthDate = this.records;
+                this.recordsSortedByLastName = this.records;
+
                 resolve("Records added successfully!\n");
             });
         })
@@ -125,6 +129,10 @@ class Records {
             this.genderRecordsNeedsUpdate = true;
             this.birthDateRecordsNeedsUpdate = true;
             this.lastNameRecordsNeedsUpdate = true;
+            
+            this.recordsSortedByGender = this.records;
+            this.recordsSortedByByBirthDate = this.records;
+            this.recordsSortedByLastName = this.records;
 
             resolve("Success!\n");
         });
@@ -163,7 +171,7 @@ class Records {
      */
     getRecordsSortedByGender() {
         if(!this.genderRecordsNeedsUpdate) return this.recordsSortedByGender;
-        this.recordsSortedByGender = this.records.sort( (left, right) => {
+        this.recordsSortedByGender.sort( (left, right) => {
             /**
              * Sort Compare Function
              * If Result is < 0, left will go before right
@@ -201,7 +209,7 @@ class Records {
      */
     getRecordsSortedByBirthDate() {
         if(!this.birthDateRecordsNeedsUpdate) return this.recordsSortedByByBirthDate;
-        this.recordsSortedByByBirthDate = this.records.sort( (left, right) => {
+        this.recordsSortedByByBirthDate.sort( (left, right) => {
             /**
              * Sort Compare Function
              * If Result is < 0, left will go before right
@@ -259,7 +267,7 @@ class Records {
      */
     getRecordsSortedByLastName() {
         if(!this.lastNameRecordsNeedsUpdate) return this.recordsSortedByLastName;
-        this.recordsSortedByLastName = this.records.sort( (left, right) => {
+        this.recordsSortedByLastName.sort( (left, right) => {
             /**
              * Sort Compare Function
              * If Result is < 0, left will go before right
