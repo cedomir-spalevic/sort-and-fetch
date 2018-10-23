@@ -1,6 +1,6 @@
 ﻿# sort-and-fetch
- > Command Line App that reads a file containing records in different formats and sorts the records
- > Also has a REST API to access the same data
+ > Command Line App that reads a file containing records in different formats and sorts the records.
+ > Comes with a REST API to access the same data
  
  ## Accepted formats
  1. Pipe Delimited
