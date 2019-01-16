@@ -4,11 +4,11 @@
  
  ## Accepted formats
  1. Pipe Delimited
- ``` Last Name | First Name | Gender | Favorite Color | Date of Birth ```
+ ``` LastName | FirstName | Gender | FavoriteColor | DateOfBirth ```
  2. Comma Delimited
- ``` Last Name, First Name, Gender, Favorite Color, Date of Birth ```
+ ``` LastName, FirstName, Gender, FavoriteColor, DateOfBirth ```
  3. Space Delimited
- ``` Last Name First Name Gender Favorite Color Date of Birth ```
+ ``` LastName FirstName Gender FavoriteColor DateOfBirth ```
  
  ## REST API Endpoints
  1. Post /records           - Accepts a record, or a json array of records in any of the 3 above formats
