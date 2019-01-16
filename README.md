@@ -16,12 +16,12 @@
               #### Accepted Formats for POST Request
               
               # single json record in any of the above formats
-              "Last Name | First Name | Gender | Favorite Color | Date of Birth"
+              "LastName | FirstName | Gender | FavoriteColor | DateOfBirth"
               
               # json array of records
               [
-                "Last Name | First Name | Gender | Favorite Color | Date of Birth",
-                "Last Name | First Name | Gender | Favorite Color | Date of Birth",
+                "LastName | FirstName | Gender | FavoriteColor | DateOfBirth",
+                "LastName | FirstName | Gender | FavoriteColor | DateOfBirth",
               ]
               
               
