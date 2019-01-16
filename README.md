@@ -15,7 +15,7 @@
               
               #### Accepted Formats for POST Request
               
-              # single json record in any of the following formats
+              # single json record in any of the above formats
               "Last Name | First Name | Gender | Favorite Color | Date of Birth"
               
               # json array of records
